@@ -3,40 +3,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering; //To use the new InputSystem
+using UnityEngine.Rendering; 
 
 public class Test : MonoBehaviour
 {
+    
+    
     float horizontalInput;
     public string playerName = "Melda";
     public float playerHealth = 100f;
     public float jumpPower = 5f;
-    
-    public GameInput inputActions;  //Declaration
-    public InputAction moveAction;
     public float movementSpeed = 6f;
     
-    bool isFacingRight = false;
-    Animator animator;
+    private Rigidbody2D rb;  //Declaration
+    public GameInput inputActions;  
+    public InputAction moveAction;
     
+    bool isFacingRight = false;
+    private Animator anim;
     public Vector2 moveInput;
+    
 
-    void Start()
-    {
-        rb=GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-    }
-
+    
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>(); //So that the player has a body
+        rb = GetComponent<Rigidbody2D>(); //To access the RigidBody
         inputActions = new GameInput();
         moveAction = inputActions.Player.Move;  //With the dot you move forwards and access "move"
+        anim = gameObject.GetComponent<Animator>();
     }
 
-    private Rigidbody2D rb;  //Declaration
     
-
     private void OnEnable()
     {
         inputActions.Enable();
@@ -54,10 +51,11 @@ public class Test : MonoBehaviour
         // Aufgabe: Bei der x-Achse soll Unity die Daten aus dem Input nutzen
         
         // "* movementSpeed" to be able to move
-        animator.SetFloat("xVelocity", Math.Abs(rb.velocity.x));
-        animator.SetFloat("yVelocity", rb.velocity.y);
+        anim.SetFloat("xVelocity", Math.Abs(rb.velocity.x));
+        
     }
 
+    
     private void OnDisable()
     {
         inputActions.Enable();
@@ -66,9 +64,19 @@ public class Test : MonoBehaviour
         //unsub - negativ when key is not pressed
     }
 
+    
     private void Move(InputAction.CallbackContext ctx)
     {
         moveInput = ctx.ReadValue<Vector2>();  //we save wasd and the vectors 
+
+        if (moveInput.x > 0) //right
+        {
+           transform.rotation = Quaternion.Euler(0,0,0);
+        }
+        else if (moveInput.x < 0) //left
+        {
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
     }
 
     float CheckHealth()
